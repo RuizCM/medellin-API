@@ -23,8 +23,11 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async updatePreferences(id: string, preferences: User['preferences']): Promise<User | null> {
+  async updatePreferences(id: string, preferences: User['preferences']): Promise<Omit<User, 'password'> | null> {
     await this.usersRepository.update(id, { preferences });
-    return this.findById(id);
+    const user = await this.findById(id);
+    if (!user) return null;
+    const { password, ...result } = user;
+    return result;
   }
 }
